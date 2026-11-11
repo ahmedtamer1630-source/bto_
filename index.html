@@ -56,8 +56,8 @@ header button,header a.t{font-size:14px;letter-spacing:.22em;color:var(--ink);te
 @keyframes sway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
 .hk{display:block;width:44%;margin:0 auto -17%;position:relative;z-index:0}
 .item img{display:block;width:100%;position:relative;z-index:1;filter:drop-shadow(0 10px 12px #0003)}
-.rack.focus .item{filter:blur(6px);opacity:0;pointer-events:none;transform:scale(.86)}
-.rack.focus .item.on{filter:none;opacity:1;pointer-events:auto;transform:translateX(var(--dx,0px)) scale(var(--sc))}
+.rack.focus .item{filter:blur(6px);opacity:.3;pointer-events:none;transform:translateX(var(--gx,0px)) scale(.8);z-index:1}
+.rack.focus .item.on{filter:none;opacity:1;pointer-events:auto;z-index:2;transform:translateX(var(--dx,0px)) scale(var(--sc))}
 .item:not(.on) .sw{animation-play-state:paused}
 .hint{margin:26px 0 0;text-align:center;color:var(--mute);font-size:14px;letter-spacing:.3em;transition:opacity .4s}
 .rack.focus~.hint{opacity:0}
@@ -79,7 +79,7 @@ header button,header a.t{font-size:14px;letter-spacing:.22em;color:var(--ink);te
 .buy h3{margin:0;font-weight:500;font-size:17px;letter-spacing:.2em}
 .buy .col{color:var(--mute);letter-spacing:.3em;font-size:12px;margin-top:2px}
 .buy .pr{font-size:15px;margin:6px 0 12px;letter-spacing:.12em}
-.dots{display:flex;gap:12px;justify-content:center;margin:0 0 14px}.dots button{width:18px;height:18px;border-radius:50%;border:1px solid #0003}.dots button[aria-current=true]{outline:2px solid var(--ink);outline-offset:2px}
+.dots{display:flex;gap:12px;justify-content:center;margin:0 0 14px}.dots button{padding:5px 16px;border-radius:999px;border:1px solid var(--line);font-size:13px;letter-spacing:.2em;background:#f6f5f2}.dots button[aria-current=true]{background:var(--ink);color:#f6f5f2;border-color:var(--ink)}
 .sizes{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
 .sizes button{width:38px;height:34px;font-size:15px;border:1px solid var(--line);background:#f6f5f2;border-radius:4px}
 .sizes button[aria-pressed=true]{background:var(--ink);color:#f6f5f2;border-color:var(--ink)}
@@ -96,6 +96,17 @@ h2{margin:0 0 .8em;font-weight:500;font-size:clamp(26px,4vw,44px);letter-spacing
 .about{max-width:680px;margin:0 auto;text-align:center}
 .about .sc{font-family:var(--script);font-size:clamp(40px,7vw,64px)}
 .about p{font-size:21px;line-height:1.5;color:#4b4c50;letter-spacing:.03em}
+#ord{position:fixed;inset:0;z-index:45;background:#000a;display:none;overflow:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px 14px}#ord.on{display:block}
+.sheet2{max-width:460px;margin:0 auto;background:#f6f5f2;padding:22px;border-radius:6px;display:flex;flex-direction:column;gap:12px}
+.sheet2 h3{margin:0;font-weight:500;font-size:20px;letter-spacing:.2em}
+.sheet2 .x{align-self:flex-end;font-size:13px;letter-spacing:.2em;color:var(--mute)}
+.sheet2 .sum{font-size:14px;letter-spacing:.12em;color:var(--mute);border-bottom:1px solid var(--line);padding-bottom:10px}
+.sheet2 label{display:flex;flex-direction:column;gap:4px;font-size:12px;letter-spacing:.2em;color:var(--mute)}
+.sheet2 input,.sheet2 textarea{font:inherit;font-size:16px;letter-spacing:.02em;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px;width:100%}
+.sheet2 .err{color:#b3261e;font-size:14px;min-height:1.2em}
+.sheet2 .go{padding:12px;border-radius:999px;background:var(--ink);color:#f6f5f2;letter-spacing:.24em;font-size:15px}
+.sheet2 .cp{font-size:12px;letter-spacing:.2em;color:var(--mute);padding:4px}
+.sheet2 .fine{margin:0;font-size:13px;line-height:1.4;color:var(--mute);letter-spacing:.02em}
 .pol{max-width:760px;margin:0 auto}.pol details{border-bottom:1px solid var(--line)}.pol details:first-of-type{border-top:1px solid var(--line)}
 .pol summary{cursor:pointer;list-style:none;padding:18px 0;font-size:18px;letter-spacing:.2em;display:flex;justify-content:space-between;gap:12px}
 .pol summary::-webkit-details-marker{display:none}.pol summary::after{content:"+";font-size:22px;line-height:1}.pol details[open] summary::after{content:"–"}
@@ -185,12 +196,13 @@ footer{border-top:1px solid var(--line);padding:26px clamp(16px,4vw,48px);displa
     <div class="rack" id="rack">
       <div class="rail"></div>
       <div id="items" style="display:contents"></div>
+      <div class="tags" id="tags" aria-label="Colors"></div>
     </div>
     <p class="hint">TAP A JACKET</p>
     <div class="buy" id="buy" hidden>
       <h3 id="bName">BTO WOOL JACKET</h3>
       <div class="col" id="bCol"></div>
-      <div class="pr">2,450 EGP</div>
+      <div class="pr">2,100 EGP</div>
       <div class="dots" id="dots" aria-label="Colors"></div>
       <div class="sizes" id="sizes"></div>
       <button id="add" disabled>SELECT SIZE</button>
@@ -213,7 +225,7 @@ footer{border-top:1px solid var(--line);padding:26px clamp(16px,4vw,48px);displa
     <h2>POLICIES</h2>
     <div class="pol">
       <details open><summary>HOW TO ORDER</summary><div class="b">
-        <p>Pick your jacket, choose a size and press <b>Order now</b>. This opens an email to <a href="mailto:beyondtheordinary000@gmail.com">beyondtheordinary000@gmail.com</a> with your order filled in. Add your name, phone number and delivery address, then send it.</p>
+        <p>Pick your jacket and size, press <b>Order now</b>, then fill in your name, phone number and full delivery address. Press <b>Send order</b> and an email with all your details opens, ready to send to <a href="mailto:beyondtheordinary000@gmail.com">beyondtheordinary000@gmail.com</a>.</p>
         <p>We reply within 24 hours to confirm availability, the total and the payment method. Your order is only confirmed once you receive our reply.</p>
       </div></details>
       <details><summary>SHIPPING</summary><div class="b">
@@ -242,6 +254,20 @@ footer{border-top:1px solid var(--line);padding:26px clamp(16px,4vw,48px);displa
   </section>
 </main>
 <footer><span>© 2026 BEYOND THE ORDINARY — BTO</span><span>INSTAGRAM</span><a href="#policies" style="color:inherit;text-decoration:none">POLICIES</a><a href="mailto:beyondtheordinary000@gmail.com" style="color:inherit;text-decoration:none">beyondtheordinary000@gmail.com</a></footer>
+<div id="ord" role="dialog" aria-modal="true" aria-label="Order details"><div class="sheet2">
+  <button class="x" id="ordX">CLOSE ✕</button>
+  <h3>YOUR DETAILS</h3>
+  <div class="sum" id="ordSum"></div>
+  <label>FULL NAME *<input id="fN" autocomplete="name"></label>
+  <label>PHONE NUMBER *<input id="fP" type="tel" inputmode="tel" autocomplete="tel"></label>
+  <label>GOVERNORATE / CITY *<input id="fC" autocomplete="address-level1"></label>
+  <label>FULL ADDRESS * (street, building, floor, apartment)<textarea id="fA" rows="3" autocomplete="street-address"></textarea></label>
+  <label>NOTES (optional)<textarea id="fT" rows="2"></textarea></label>
+  <div class="err" id="ordErr" role="alert"></div>
+  <button class="go" id="ordSend">SEND ORDER</button>
+  <button class="cp" id="ordCopy">COPY ORDER TEXT</button>
+  <p class="fine">Send order opens your email app with everything filled in, addressed to beyondtheordinary000@gmail.com. Press send there. We reply within 24 hours to confirm your order and agree the payment method.</p>
+</div></div>
 <div id="toast"></div>
 
 <script>
@@ -255,9 +281,10 @@ const HANGER='<svg class="hk" viewBox="0 0 200 110" aria-hidden="true"><path d="
 let cart=0,cur=null,size=null;
 
 $('#items').innerHTML=P.map(p=>`<button class="item" data-id="${p.id}" aria-label="BTO Wool Jacket ${p.col}"><span class="sw">${HANGER}<img src="${IMG[p.id].cut}" alt="BTO wool jacket in ${p.col.toLowerCase()}"></span></button>`).join('');
-$('#dots').innerHTML=P.map(p=>`<button class="dt" data-id="${p.id}" aria-label="${p.col}" style="background:${p.hex}"></button>`).join('');
+$('#dots').innerHTML=P.map(p=>`<button class="dt" data-id="${p.id}">${p.id.toUpperCase()}</button>`).join('');
+$('#tags').innerHTML=P.map(p=>`<button class="tag" data-id="${p.id}" aria-label="${p.col}"><i></i><b style="background:${p.hex}"></b></button>`).join('');
 $('#sizes').innerHTML=['S','M','L','XL'].map(s=>`<button aria-pressed="false">${s}</button>`).join('');
-const items=[...document.querySelectorAll('.item')],tags=[...document.querySelectorAll('.dt')];
+const items=[...document.querySelectorAll('.item')],tags=[...document.querySelectorAll('.dt,.tag')];
 
 function setDet(id){const im=IMG[id];$('#det').innerHTML=[['logo','SCRIPT EMBROIDERY'],['collar','METAL ZIP + COLLAR'],['cuff','SNAP CUFF'],['back','BTO STAR'],['lining','LINING']].map(([k,t])=>`<figure><img src="${im[k]}" alt="${t}"><figcaption>${t}</figcaption></figure>`).join('')}
 setDet('grey');
@@ -284,6 +311,17 @@ const MAIL='beyondtheordinary000@gmail.com';
 function mail(sub,body){const a=document.createElement('a');a.href='mailto:'+MAIL+'?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body);document.body.appendChild(a);a.click();a.remove();toast(MAIL)}
 $('#add').onclick=()=>mail('New order — BTO Wool Jacket ('+cur.col+')','Hi BTO, I would like to order:\n\nBTO Wool Jacket\nColor: '+cur.col+'\nSize: '+size+'\nQuantity: 1\n\nName:\nPhone:\nAddress:\n');
 $('#cartBtn').onclick=()=>mail('BTO','Hi BTO,\n\n');
+const PRICE='2,100 EGP';
+const _f=focusOn;
+focusOn=function(id){_f(id);const rack=$('#rack'),w=rack.offsetWidth;let k=0;items.forEach(it=>{if(it.dataset.id!==id){const c=it.offsetLeft+it.offsetWidth/2;it.style.setProperty('--gx',(w*(innerWidth<=640?.16:.2)+k*w*.1-c)+'px');k++}})};
+function orderText(){const v=s=>$(s).value.trim();return ['New order — BTO Wool Jacket','','Item: BTO Wool Jacket','Color: '+cur.col,'Size: '+size,'Quantity: 1','Price: '+PRICE,'','Customer details','Name: '+v('#fN'),'Phone: '+v('#fP'),'Governorate / City: '+v('#fC'),'Address: '+v('#fA'),'Notes: '+(v('#fT')||'-'),'','Sent from the BTO website'].join('\n')}
+function okForm(){const v=s=>$(s).value.trim(),e=$('#ordErr');let m='';if(!v('#fN'))m='Please enter your full name.';else if(!/\d{8,}/.test(v('#fP').replace(/[\s+-]/g,'')))m='Please enter a valid phone number.';else if(!v('#fC'))m='Please enter your governorate / city.';else if(v('#fA').length<8)m='Please enter your full address.';e.textContent=m;return !m}
+function closeOrd(){$('#ord').classList.remove('on');document.body.style.overflow=''}
+$('#add').onclick=()=>{if(!cur||!size)return;$('#ordSum').textContent='BTO WOOL JACKET · '+cur.col+' · '+size+' · '+PRICE;$('#ordErr').textContent='';$('#ord').classList.add('on');document.body.style.overflow='hidden';setTimeout(()=>$('#fN').focus(),50)};
+$('#ordSend').onclick=()=>{if(!okForm())return;mail('New order — BTO Wool Jacket ('+cur.col+', '+size+')',orderText());setTimeout(closeOrd,500)};
+$('#ordCopy').onclick=()=>{if(!okForm())return;try{navigator.clipboard.writeText(orderText()).then(()=>toast('ORDER COPIED'),()=>toast('COPY NOT AVAILABLE'))}catch(e){toast('COPY NOT AVAILABLE')}};
+$('#ordX').onclick=closeOrd;$('#ord').onclick=e=>{if(e.target.id==='ord')closeOrd()};
+addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#ord').classList.contains('on'))closeOrd()});
 $('#menuBtn').onclick=()=>{const m=$('#menu'),o=m.classList.toggle('on');$('#menuBtn').setAttribute('aria-expanded',o)};
 $('#menu').onclick=()=>{$('#menu').classList.remove('on')};
 
